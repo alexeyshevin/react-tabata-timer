@@ -1,5 +1,88 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { Interval, IntervalType } from "../../shared/types";
+import { AppControls } from "../AppControls/AppControls";
+import { AppContainer } from "./styles";
+
 export const AppWrapper = () => {
+    const [intervals, setIntervals] = useState<Interval[]>([]);
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [timeLeft, setTimeLeft] = useState<number>(0);
+    const [isRunning, setIsRunning] = useState<boolean>(false);
+
+    const timerValueRef = useRef<number | null>(null);
+
+    const addInterval = (type: IntervalType) => {
+        const duration = prompt(`Enter ${type} duration (seconds):`);
+        if (!duration) {
+            return
+        };
+
+        setIntervals([...intervals, { type, duration: Number(duration) }]);
+    };
+
+    const startTimer = () => {
+        if (intervals.length === 0) {
+            return;
+        }
+
+        setIsRunning(true);
+
+        if (timeLeft === 0) {
+            setTimeLeft(intervals[0].duration);
+            setCurrentIndex(0);
+        }
+    };
+
+    const stopTimer = () => {
+        setIsRunning(false);
+
+        if (timerValueRef.current) {
+            clearInterval(timerValueRef.current);
+        }
+    };
+
+    const resetTimer = () => {
+        stopTimer();
+        setCurrentIndex(0);
+        setTimeLeft(0);
+    };
+
+    useEffect(() => {
+        if (!isRunning) {
+            return;
+        }
+
+        timerValueRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+            if (prev > 1) {
+                return prev - 1;
+            }
+
+            const nextIndex = currentIndex + 1;
+            if (nextIndex < intervals.length) {
+                setCurrentIndex(nextIndex);
+                return intervals[nextIndex].duration;
+            } else {
+                stopTimer();
+                return 0;
+            }
+        });
+        }, 1000);
+
+        return () => {
+        if (timerValueRef.current) {
+            clearInterval(timerValueRef.current);
+        }
+        };
+    }, [isRunning, currentIndex, intervals]);
+
+    const currentInterval = useMemo(() => {
+        return intervals[currentIndex];
+    }, [intervals, currentIndex]);
+
     return (
-        <></>
+        <AppContainer>
+            <AppControls onAddInterval={addInterval}/>
+        </AppContainer>
     );
 };
