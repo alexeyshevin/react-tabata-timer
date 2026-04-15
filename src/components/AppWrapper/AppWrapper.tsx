@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Interval, IntervalType } from "../../shared/types";
 import { AppControls } from "../AppControls/AppControls";
+import { AppIntervals } from "../AppIntervals/AppIntervals";
+import { AppTimer } from "../AppTimer/AppTimer";
 import { AppContainer } from "./styles";
 
 export const AppWrapper = () => {
@@ -83,6 +85,11 @@ export const AppWrapper = () => {
     return (
         <AppContainer>
             <AppControls onAddInterval={addInterval}/>
+            <AppIntervals intervals={intervals} />
+            <AppTimer
+                currentInterval={currentInterval}
+                timeLeft={timeLeft}
+            />
         </AppContainer>
     );
 };
