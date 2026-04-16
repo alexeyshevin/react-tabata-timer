@@ -11,7 +11,7 @@ export const AppIntervals = (props: Props) => {
             <IntervalList>
                 {props.intervals.map((i, index) => {
                     return (
-                        <IntervalListItem key={`element_${index}`}>
+                        <IntervalListItem key={`${i.type}_${index}`}>
                             <span>{index + 1}.</span>
                             <span>{i.type.toUpperCase()}</span>
                             <span>{i.duration}s</span>

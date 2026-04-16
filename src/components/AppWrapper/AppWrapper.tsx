@@ -30,6 +30,10 @@ export const AppWrapper = () => {
 
         setIsRunning(true);
 
+        if (currentIndex >= intervals.length) {
+            setCurrentIndex(0);
+        }
+
         if (timeLeft === 0) {
             setTimeLeft(intervals[0].duration);
             setCurrentIndex(0);
@@ -39,8 +43,9 @@ export const AppWrapper = () => {
     const stopTimer = () => {
         setIsRunning(false);
 
-        if (timerValueRef.current) {
+        if (timerValueRef.current !== null) {
             clearInterval(timerValueRef.current);
+            timerValueRef.current = null;
         }
     };
 
@@ -56,20 +61,25 @@ export const AppWrapper = () => {
         }
 
         timerValueRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-            if (prev > 1) {
-                return prev - 1;
-            }
+            setTimeLeft((prev) => {
+                if (prev > 1) {
+                    return prev - 1;
+                }
 
-            const nextIndex = currentIndex + 1;
-            if (nextIndex < intervals.length) {
-                setCurrentIndex(nextIndex);
-                return intervals[nextIndex].duration;
-            } else {
-                stopTimer();
+                setCurrentIndex((prevIndex) => {
+                    const nextIndex = prevIndex + 1;
+
+                    if (nextIndex < intervals.length) {
+                        setTimeLeft(intervals[nextIndex].duration);
+                        return nextIndex;
+                    } else {
+                        stopTimer();
+                        return prevIndex;
+                    }
+                });
+
                 return 0;
-            }
-        });
+            });
         }, 1000);
 
         return () => {

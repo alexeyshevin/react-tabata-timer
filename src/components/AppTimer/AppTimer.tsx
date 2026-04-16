@@ -3,7 +3,7 @@ import type { Interval } from "../../shared/types";
 import { TimeLeftBlock, TimerBlock, TimerTypeBlock } from "./styles";
 
 type Props = {
-    currentInterval: Interval;
+    currentInterval?: Interval;
     timeLeft: number;
 };
 
