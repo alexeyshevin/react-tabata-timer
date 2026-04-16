@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Interval, IntervalType } from "../../shared/types";
+import { AppActions } from "../AppActions/AppActions";
 import { AppControls } from "../AppControls/AppControls";
 import { AppIntervals } from "../AppIntervals/AppIntervals";
 import { AppTimer } from "../AppTimer/AppTimer";
@@ -89,6 +90,11 @@ export const AppWrapper = () => {
             <AppTimer
                 currentInterval={currentInterval}
                 timeLeft={timeLeft}
+            />
+            <AppActions
+                onTimerStart={startTimer}
+                onTimerStop={stopTimer}
+                onTimerReset={resetTimer}
             />
         </AppContainer>
     );
