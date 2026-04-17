@@ -11,27 +11,30 @@ export const useTabataTimer = () => {
 
     const addInterval = (type: IntervalType) => {
         const duration = prompt(`Enter ${type} duration (seconds):`);
-        if (!duration) return;
+        if (!duration) {
+            return;
+        }
 
-        setIntervals(prev => [
-            ...prev,
-            { type, duration: Number(duration) }
-        ]);
+        const parsedDuration = Number(duration);
+
+        if (Number.isNaN(parsedDuration) || parsedDuration <= 0) {
+            return;
+        }
+
+        setIntervals(prev => [...prev, { type, duration: parsedDuration }]);
     };
 
     const startTimer = () => {
         if (intervals.length === 0) return;
 
-        setIsRunning(true);
-
         if (currentIndex >= intervals.length) {
             setCurrentIndex(0);
+            setTimeLeft(intervals[0].duration);
+        } else if (timeLeft === 0) {
+            setTimeLeft(intervals[currentIndex].duration);
         }
 
-        if (timeLeft === 0) {
-            setTimeLeft(intervals[0].duration);
-            setCurrentIndex(0);
-        }
+        setIsRunning(true);
     };
 
     const stopTimer = () => {
@@ -50,39 +53,40 @@ export const useTabataTimer = () => {
     };
 
     const clearIntervals = () => {
+        stopTimer();
         setIntervals([]);
-        resetTimer();
+        setCurrentIndex(0);
+        setTimeLeft(0);
     };
 
     useEffect(() => {
-        if (!isRunning) return;
+        if (!isRunning || intervals.length === 0) return;
 
-        timerRef.current = setInterval(() => {
-            setTimeLeft(prev => {
-                if (prev > 1) return prev - 1;
+        timerRef.current = window.setInterval(() => {
+            setTimeLeft(prevTime => {
+                if (prevTime > 1) {
+                    return prevTime - 1;
+                }
 
-                setCurrentIndex(prevIndex => {
-                    const nextIndex = prevIndex + 1;
+                const nextIndex = currentIndex + 1;
 
-                    if (nextIndex < intervals.length) {
-                        setTimeLeft(intervals[nextIndex].duration);
-                        return nextIndex;
-                    } else {
-                        stopTimer();
-                        return prevIndex;
-                    }
-                });
+                if (nextIndex < intervals.length) {
+                    setCurrentIndex(nextIndex);
+                    return intervals[nextIndex].duration;
+                }
 
+                stopTimer();
                 return 0;
             });
         }, 1000);
 
         return () => {
-            if (timerRef.current) {
+            if (timerRef.current !== null) {
                 clearInterval(timerRef.current);
+                timerRef.current = null;
             }
         };
-    }, [isRunning, intervals]);
+    }, [isRunning, currentIndex, intervals]);
 
     const currentInterval = useMemo(() => {
         return intervals[currentIndex];
