@@ -1,4 +1,4 @@
-import { formatTime } from "../../shared/formatTime";
+import { formatTime } from "../../shared/helpers/formatTime";
 import type { Interval } from "../../shared/types";
 import { TimeLeftBlock, TimerBlock, TimerTypeBlock } from "./styles";
 
