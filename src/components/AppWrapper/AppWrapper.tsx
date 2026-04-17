@@ -55,6 +55,11 @@ export const AppWrapper = () => {
         setTimeLeft(0);
     };
 
+    const clearIntervals = () => {
+        setIntervals([]);
+        resetTimer();
+    };
+
     useEffect(() => {
         if (!isRunning) {
             return;
@@ -95,7 +100,10 @@ export const AppWrapper = () => {
 
     return (
         <AppContainer>
-            <AppControls onAddInterval={addInterval}/>
+            <AppControls
+                onAddInterval={addInterval}
+                onResetIntervals={clearIntervals}
+            />
             <AppIntervals intervals={intervals} />
             <AppTimer
                 currentInterval={currentInterval}

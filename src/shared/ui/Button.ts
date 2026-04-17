@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 type Props = {
-  variant?: "start" | "stop" | "reset" | "work" | "rest";
+  variant?: "start" | "stop" | "reset" | "work" | "rest" | "clear";
 };
 
 export const Button = styled.button<Props>`
@@ -23,6 +23,8 @@ export const Button = styled.button<Props>`
         return "#3b82f6";
       case "rest":
         return "#22c55e";
+      case "clear":
+        return "#f30808";
       default:
         return "#6b7280";
     }
