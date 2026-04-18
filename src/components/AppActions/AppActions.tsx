@@ -5,6 +5,7 @@ type Props = {
     onTimerStart: () => void;
     onTimerStop: () => void;
     onTimerReset: () => void;
+    isRunning?: boolean;
 };
 
 export const AppActions = (props: Props) => {
@@ -25,6 +26,8 @@ export const AppActions = (props: Props) => {
             <Button
                 variant="start"
                 onClick={handleStartTimer}
+                disabled={props.isRunning}
+                style={{ "opacity": props.isRunning ?  "0.5" : 1 }}
             >
                 Start
             </Button>

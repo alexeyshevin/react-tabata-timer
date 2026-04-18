@@ -1,5 +1,5 @@
 export const formatTime = (timeInSeconds: number) => {
-    const totalMilliseconds = Math.floor(timeInSeconds * 1000);
+    const totalMilliseconds = Math.max(0, Math.floor(timeInSeconds * 1000));
     const minutes = Math.floor(totalMilliseconds / 60000);
     const seconds = Math.floor((totalMilliseconds % 60000) / 1000);
     const milliseconds = totalMilliseconds % 1000;

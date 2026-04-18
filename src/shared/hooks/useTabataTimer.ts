@@ -8,6 +8,7 @@ export const useTabataTimer = () => {
     const [isRunning, setIsRunning] = useState<boolean>(false);
 
     const timerRef = useRef<number | null>(null);
+    const endTimeRef = useRef<number | null>(null);
 
     const addInterval = (type: IntervalType) => {
         const duration = prompt(`Enter ${type} duration (seconds):`);
@@ -25,14 +26,26 @@ export const useTabataTimer = () => {
     };
 
     const startTimer = () => {
-        if (intervals.length === 0) return;
+        if (intervals.length === 0) {
+        return;
+    }
 
-        if (currentIndex >= intervals.length) {
-            setCurrentIndex(0);
-            setTimeLeft(intervals[0].duration);
-        } else if (timeLeft === 0) {
-            setTimeLeft(intervals[currentIndex].duration);
+        if (isRunning) {
+            return;
         }
+
+        if (timeLeft > 0) {
+            endTimeRef.current = Date.now() + timeLeft * 1000;
+            setIsRunning(true);
+            return;
+        }
+
+        const safeIndex = currentIndex >= intervals.length ? 0 : currentIndex;
+        const duration = intervals[safeIndex].duration;
+
+        setCurrentIndex(safeIndex);
+        setTimeLeft(duration);
+        endTimeRef.current = Date.now() + duration * 1000;
 
         setIsRunning(true);
     };
@@ -60,25 +73,37 @@ export const useTabataTimer = () => {
     };
 
     useEffect(() => {
-        if (!isRunning || intervals.length === 0) return;
+        if (!isRunning || !endTimeRef.current) {
+            return;
+        }
 
         timerRef.current = window.setInterval(() => {
-            setTimeLeft(prevTime => {
-                if (prevTime > 1) {
-                    return prevTime - 1;
+            const diff = endTimeRef.current! - Date.now();
+
+            if (diff <= 0) {
+                let shouldStop = false;
+
+                setCurrentIndex(prevIndex => {
+                    const nextIndex = prevIndex + 1;
+
+                    if (nextIndex < intervals.length) {
+                        endTimeRef.current =
+                            Date.now() + intervals[nextIndex].duration * 1000;
+                        return nextIndex;
+                    } else {
+                        shouldStop = true;
+                        return prevIndex;
+                    }
+                });
+
+                if (shouldStop) {
+                    stopTimer();
+                    setTimeLeft(0);
                 }
-
-                const nextIndex = currentIndex + 1;
-
-                if (nextIndex < intervals.length) {
-                    setCurrentIndex(nextIndex);
-                    return intervals[nextIndex].duration;
-                }
-
-                stopTimer();
-                return 0;
-            });
-        }, 1000);
+            } else {
+                setTimeLeft(diff / 1000);
+            }
+        }, 1);
 
         return () => {
             if (timerRef.current !== null) {
@@ -86,7 +111,7 @@ export const useTabataTimer = () => {
                 timerRef.current = null;
             }
         };
-    }, [isRunning, currentIndex, intervals]);
+    }, [isRunning, intervals]);
 
     const currentInterval = useMemo(() => {
         return intervals[currentIndex];
@@ -97,7 +122,6 @@ export const useTabataTimer = () => {
         timeLeft,
         currentInterval,
         isRunning,
-
         addInterval,
         startTimer,
         stopTimer,

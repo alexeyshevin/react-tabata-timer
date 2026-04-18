@@ -10,6 +10,7 @@ export const AppWrapper = () => {
         intervals,
         timeLeft,
         currentInterval,
+        isRunning,
         addInterval,
         startTimer,
         stopTimer,
@@ -32,6 +33,7 @@ export const AppWrapper = () => {
                 onTimerStart={startTimer}
                 onTimerStop={stopTimer}
                 onTimerReset={resetTimer}
+                isRunning={isRunning}
             />
         </AppContainer>
     );
