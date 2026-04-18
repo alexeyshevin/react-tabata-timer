@@ -23,6 +23,7 @@ export const AppWrapper = () => {
             <AppControls
                 onAddInterval={addInterval}
                 onResetIntervals={clearIntervals}
+                intervals={intervals}
             />
             <AppIntervals intervals={intervals} />
             <AppTimer
